@@ -1,8 +1,15 @@
 # SpringBoot-MicroServices
 
-project 1 : book-catalog-service
-project 2 : book-info-service
-project 3 : book-rating-service
+project 1 : 
+book-catalog-service
+
+project 2 : 
+book-info-service
+
+project 3 : 
+book-rating-service
+
+
 
 Master -
   
