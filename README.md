@@ -36,4 +36,16 @@ ConsumeBookInfoService-WebClient
     Only 'book-catalog-service' is changed, remaining two services are same like in master.
     
 
+Branch 3 - 
+
+ConsumeBookRatingsService-RestTemplate
+
+    Created for the code which is calling 'book-ratings-service' in 'book-catalog-service' using RestTemplate.
+    
+    Code is in BookCatalogResource.java.
+    
+    'book-catalog-service' and 'book-ratings-service' are changed, remaining one service is same like in master.
+    
+    
+
 
