@@ -2,16 +2,14 @@ package com.microservices.bookcatalogservice.resources;
 
 import com.microservices.bookcatalogservice.model.Book;
 import com.microservices.bookcatalogservice.model.BookCatalog;
-import com.microservices.bookcatalogservice.model.Rating;
+import com.microservices.bookcatalogservice.model.UserRating;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,26 +18,21 @@ import java.util.stream.Collectors;
 public class BookCatalogResource {
 
     @Autowired
-    private WebClient.Builder webClientBuilder;
+    private RestTemplate restTemplate;
 
     @RequestMapping("/{userId}")
     public List<BookCatalog> getCatalog(@PathVariable("userId") String userId){
 
-        List<Rating> ratings = Arrays.asList(
-                new Rating("1001", 4),
-                new Rating("1002", 3),
-                new Rating("1003", 5)
-        );
+        UserRating ratings = restTemplate.getForObject("http://localhost:8093/ratingData/users" + userId, UserRating.class);
+        return ratings.getUserRatingList().stream().map(rating -> {
+            //For each BookId call book-info-service and get book details
+            Book book = restTemplate.getForObject("http://localhost:8092/books/" + rating.getBookId(), Book.class);
+            //Put them all together
+            return new BookCatalog(book.getBookName(), "description", rating.getRating());
+        })
+         .collect(Collectors.toList());
 
-        //Calling book-info service into this book-catalog-service using WebClient
-        return ratings.stream().map (rating -> {
-            Book book = webClientBuilder.build()
-                    .get()
-                    .uri("http://localhost:8092/books/"+rating.getBookId())
-                    .retrieve()
-                    .bodyToMono(Book.class)
-                    .block();
-            return new BookCatalog(book.getBookName(), "complete book for Spring Boot", rating.getRating());
-        }).collect(Collectors.toList());
+
+
     }
 }

@@ -13,6 +13,9 @@ public class Rating {
         return bookId;
     }
 
+    public Rating() {
+    }
+
     public void setBookId(String bookId) {
         this.bookId = bookId;
     }
